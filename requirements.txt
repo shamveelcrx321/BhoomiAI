@@ -1,0 +1,9 @@
+quart
+aiohttp
+langchain
+langchain-community
+langchain-core
+langchain-ollama
+faiss-cpu
+sentence-transformers
+quart-cors

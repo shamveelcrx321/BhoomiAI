@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BhoomiAI | Earth Intelligence System</title>
+    <meta name="description" content="BhoomiAI — AI-powered geospatial intelligence for infrastructure planning, environmental impact, and district-level data analysis.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="bg-mesh">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+    <nav class="glass-nav">
+        <div class="nav-brand">
+            <i class="fa-solid fa-leaf brand-icon"></i>
+            <span>Bhoomi<span class="highlight">AI</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active">Intelligence</a>
+            <a href="#">Climate</a>
+            <a href="#">Sustainability</a>
+        </div>
+        <div class="nav-eco-badge">
+            <i class="fa-solid fa-circle-dot fa-beat-fade"></i>
+            Earth Data Live
+        </div>
+    </nav>
+    <main class="app-container">
+        <div id="hero-section" class="scroll-container">
+
+            <section class="scroll-section" id="section-intro">
+                <div class="section-content text-center">
+                    <h1 class="hero-title" style="font-size: 5rem; margin-bottom: 0;">
+                        <span class="gradient-text">BhoomiAI</span>
+                    </h1>
+                    <p class="hero-desc" style="font-size: 1.5rem;">Understanding Land Through Intelligence</p>
+                </div>
+            </section>
+            <section class="scroll-section" id="section-feature1">
+                <div class="section-content text-center" style="max-width: 800px; margin: 0 auto;">
+                    <h2 class="hero-title mb-4">Analyze Any Location</h2>
+                    <p class="hero-desc mb-4">BhoomiAI gathers climate, infrastructure, and geographic data for any coordinate.</p>
+                    <div class="search-panel-container" style="margin: 0 auto; margin-top: 2rem;">
+                        <div class="search-tabs">
+                            <button class="tab-btn active" data-target="text-search">Location Name</button>
+                            <button class="tab-btn" data-target="coord-search">Coordinates</button>
+                        </div>
+                        <div class="search-panels">
+                            <div id="text-search" class="search-panel active">
+                                <div class="search-ai-wrapper input-group">
+                                    <i class="fa-solid fa-location-dot input-icon"></i>
+                                    <input type="text" id="loc-input" placeholder="e.g. Thrissur, Bangalore, Rajkot Gujarat...">
+                                    <button class="btn-primary" id="btn-analyze-text" onclick="analyzeLocation('text')">
+                                        <i class="fa-solid fa-magnifying-glass-location"></i> Analyze Site
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="coord-search" class="search-panel">
+                                <div class="coord-wrapper">
+                                    <div class="input-group">
+                                        <label>Latitude</label>
+                                        <input type="number" id="lat-input" step="any" placeholder="10.7867">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Longitude</label>
+                                        <input type="number" id="lon-input" step="any" placeholder="76.6548">
+                                    </div>
+                                    <button class="btn-primary align-bottom" id="btn-analyze-coord" onclick="analyzeLocation('coord')">
+                                        <i class="fa-solid fa-crosshairs"></i> Analyze
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="loader-overlay hidden" id="global-loader">
+            <div class="loader-content">
+                <div class="earth-loader"></div>
+                <h3 class="loader-text pulse-text">Scanning Earth Context...</h3>
+                <div class="progress-steps">
+                    <div class="step"><i class="fa-solid fa-satellite-dish"></i> Geospatial</div>
+                    <div class="step"><i class="fa-solid fa-leaf"></i> Terrain</div>
+                    <div class="step"><i class="fa-solid fa-people-group"></i> Demographics</div>
+                    <div class="step"><i class="fa-solid fa-cloud-sun"></i> Climate</div>
+                </div>
+            </div>
+        </div>
+        <section class="dashboard-section hidden" id="dashboard-section">
+            <div class="dashboard-header">
+                <div>
+                    <h2 class="section-title">Site Intelligence</h2>
+                    <p class="section-subtitle" id="loc-display-name">Scanning...</p>
+                </div>
+                <button class="btn-secondary" onclick="resetSearch()">
+                    <i class="fa-solid fa-rotate-left"></i> New Analysis
+                </button>
+            </div>
+            <div class="dashboard-grid">
+                <div class="glass-card map-card grid-col-span-2">
+                    <div class="card-header">
+                        <i class="fa-regular fa-map"></i>
+                        <span>Geospatial View</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div style="position: relative;">
+                            <div id="map-container"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card env-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-cloud-sun-rain"></i>
+                        <span>Climate &amp; Air</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="metric-row">
+                            <div class="metric">
+                                <div class="metric-label">Temperature</div>
+                                <div class="metric-value" id="val-temp">--<span class="metric-unit">°C</span></div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Humidity</div>
+                                <div class="metric-value" id="val-humidity">--<span class="metric-unit">%</span></div>
+                            </div>
+                        </div>
+                        <div class="metric-row mt-3">
+                            <div class="metric">
+                                <div class="metric-label">AQI (EU)</div>
+                                <div class="metric-value" id="val-aqi">--</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">PM2.5</div>
+                                <div class="metric-value" id="val-pm25">--<span class="metric-unit">μg</span></div>
+                            </div>
+                        </div>
+                        <div class="metric-row mt-3">
+                            <div class="metric">
+                                <div class="metric-label">Wind</div>
+                                <div class="metric-value" id="val-wind">--<span class="metric-unit">km/h</span></div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Elevation</div>
+                                <div class="metric-value" id="val-elevation">--<span class="metric-unit">m</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card infra-card grid-col-span-full">
+                    <div class="card-header">
+                        <i class="fa-solid fa-city"></i>
+                        <span>Nearby Infrastructure</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="infra-grid" id="infra-grid">
+                            <div class="infra-item" id="infra-road">
+                                <i class="fa-solid fa-road"></i>
+                                <div class="infra-info">
+                                    <div class="infra-name">Major Road</div>
+                                    <div class="infra-dist">--</div>
+                                </div>
+                            </div>
+                            <div class="infra-item" id="infra-rail">
+                                <i class="fa-solid fa-train-subway"></i>
+                                <div class="infra-info">
+                                    <div class="infra-name">Railway</div>
+                                    <div class="infra-dist">--</div>
+                                </div>
+                            </div>
+                            <div class="infra-item" id="infra-hospital">
+                                <i class="fa-solid fa-hospital"></i>
+                                <div class="infra-info">
+                                    <div class="infra-name">Hospital</div>
+                                    <div class="infra-dist">--</div>
+                                </div>
+                            </div>
+                            <div class="infra-item" id="infra-school">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                <div class="infra-info">
+                                    <div class="infra-name">Education</div>
+                                    <div class="infra-dist">--</div>
+                                </div>
+                            </div>
+                            <div class="infra-item" id="infra-power">
+                                <i class="fa-solid fa-plug-circle-bolt"></i>
+                                <div class="infra-info">
+                                    <div class="infra-name">Power Grid</div>
+                                    <div class="infra-dist">--</div>
+                                </div>
+                            </div>
+                            <div class="infra-item" id="infra-factory">
+                                <i class="fa-solid fa-industry"></i>
+                                <div class="infra-info">
+                                    <div class="infra-name">Industry</div>
+                                    <div class="infra-dist">--</div>
+                                </div>
+                            </div>
+                            <div class="infra-item" id="infra-airport">
+                                <i class="fa-solid fa-plane-departure"></i>
+                                <div class="infra-info">
+                                    <div class="infra-name">Airport</div>
+                                    <div class="infra-dist">--</div>
+                                </div>
+                            </div>
+                            <div class="infra-item" id="infra-market">
+                                <i class="fa-solid fa-store"></i>
+                                <div class="infra-info">
+                                    <div class="infra-name">Market</div>
+                                    <div class="infra-dist">--</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card terrain-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-mountain-sun"></i>
+                        <span>Terrain &amp; Land Use</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="metric-row">
+                            <div class="metric">
+                                <div class="metric-label">Land Zones</div>
+                                <div class="metric-value text-sm" id="val-landuse" style="font-size:0.92rem">--</div>
+                            </div>
+                        </div>
+                        <div class="terrain-chips mt-3" id="terrain-chips"></div>
+                    </div>
+                </div>
+                <div class="glass-card demo-card grid-col-span-2">
+                    <div class="card-header">
+                        <i class="fa-solid fa-people-group"></i>
+                        <span>Demographics &amp; District Data</span>
+                        <span class="badge-src" id="demo-source-label">Loading...</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="demo-source-badge" id="demo-badge">
+                            <i class="fa-solid fa-circle-notch fa-spin"></i>
+                            <span id="demo-badge-text">Fetching...</span>
+                        </div>
+                        <div class="demo-text" id="demo-text">Gathering district data from government sources...</div>
+                    </div>
+                </div>
+                <div class="glass-card context-card grid-col-span-full">
+                    <div class="card-header">
+                        <i class="fa-brands fa-wikipedia-w"></i>
+                        <span>Historical, Geographic &amp; Web Intelligence</span>
+                    </div>
+                    <div class="card-body">
+                        <p id="wiki-text" class="context-text text-dim">Pending...</p>
+                        <hr class="divider">
+                        <p id="web-text" class="context-text text-dim">Pending...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <button class="chat-toggle-btn" id="chat-toggle" onclick="toggleChat()">
+            <i class="fa-solid fa-seedling"></i> Ask BhoomiAI
+        </button>
+        <aside class="chat-panel" id="chat-panel">
+            <div class="chat-header">
+                <div><i class="fa-solid fa-leaf"></i> BhoomiAI Assistant</div>
+                <div class="agent-toggle-wrapper">
+                    <label class="agent-toggle" id="agent-toggle-label" title="Agent Mode uses Qwen3 with live tool-calling">
+                        <input type="checkbox" id="agent-mode-toggle">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">Agent</span>
+                    </label>
+                </div>
+                <button class="close-btn" onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message sys-msg">🌱 Earth context loaded. Ask me about the site's infrastructure, demographics, or environmental suitability.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Is it suitable for a solar plant?">
+                <button id="send-btn" onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </aside>
+    </main>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
